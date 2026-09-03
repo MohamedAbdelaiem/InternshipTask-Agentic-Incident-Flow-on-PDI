@@ -9,8 +9,7 @@
         };
 
         var r = new sn_ws.RESTMessageV2();
-        // Replace YOUR_ENDPOINT with your public ngrok URL, keep /webhook:
-        r.setEndpoint('YOUR_ENDPOINT/webhook');
+        r.setEndpoint('https://motor-earlobe-snowman.ngrok-free.dev/webhook');
         r.setHttpMethod('POST');
         r.setRequestHeader('Content-Type', 'application/json');
         r.setRequestBody(JSON.stringify(payload));
