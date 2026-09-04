@@ -1,13 +1,17 @@
 import logging
 # pyrefly: ignore [missing-import]
 from fastapi import BackgroundTasks, FastAPI, status
+from app.llm.gemeni import get_agent_decision
 from app.models import IncidentPayload, WebhookResponse
+from app.servicenow import update_incident
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 logger = logging.getLogger("agentic-incident-flow")
+
+_processed_incidents: set[str] = set()
 
 app = FastAPI(
     title="Agentic Incident Flow on ServiceNow PDI",
@@ -16,15 +20,21 @@ app = FastAPI(
 )
 
 
-def mock_process_incident(payload: IncidentPayload):
-    """Temporary worker function to simulate background incident processing."""
-    logger.info("=" * 60)
-    logger.info(" [DEMO WORKER] Starting processing for Incident: %s", payload.number)
-    logger.info("   • Sys ID:           %s", payload.incident_sys_id)
-    logger.info("   • Short Description: %s", payload.short_description)
-    logger.info("   • Description:       %s", payload.description or "(Empty)")
-    logger.info("   • Priority:          %s", payload.priority)
-    logger.info("=" * 60)
+def process_incident(payload: IncidentPayload):
+    if payload.incident_sys_id in _processed_incidents:
+        logger.warning("Duplicate incident %s (%s) — skipping", payload.number, payload.incident_sys_id)
+        return
+
+    try:
+        decision = get_agent_decision(
+            short_description=payload.short_description,
+            description=payload.description or "",
+        )
+        update_incident(payload.incident_sys_id, decision)
+        _processed_incidents.add(payload.incident_sys_id)
+    except Exception as exc:
+        _processed_incidents.discard(payload.incident_sys_id)
+        logger.error("Failed processing incident %s: %s", payload.number, exc, exc_info=True)
 
 
 @app.get("/", tags=["Health"])
@@ -48,8 +58,8 @@ async def root():
 async def receive_incident(
     payload: IncidentPayload,
     background_tasks: BackgroundTasks,
-):    
-    background_tasks.add_task(mock_process_incident, payload)
+):
+    background_tasks.add_task(process_incident, payload)
 
     return WebhookResponse(
         status="accepted",
