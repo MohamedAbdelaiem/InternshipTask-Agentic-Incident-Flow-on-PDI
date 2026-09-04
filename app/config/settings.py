@@ -12,7 +12,7 @@ class Settings(BaseSettings):
 
     # Google Gemini Configuration
     gemini_api_key: str = ""
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.6-flash"
 
     # Server Configuration
     host: str = "0.0.0.0"
