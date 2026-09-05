@@ -2,6 +2,9 @@
 
 An automated IT support triage flow integrating a **ServiceNow Developer Instance (PDI)**, a **FastAPI** webhook receiver, and **Google Gemini** for agentic incident evaluation and closed-loop ticket write-back.
 
+> 🎬 **Live Demo Video**: [Watch the Live Loop Demonstration on Google Drive](https://drive.google.com/file/d/18_ef4ZSV7RTnx4FMUkH-YVfIquSC4-9n/view?usp=sharing)  
+> Verifiable proof of the autonomous triage loop running end-to-end on ServiceNow PDI across all 3 decision paths (`respond`, `ask`, and `escalate`).
+
 ---
 
 ## Overview
@@ -168,6 +171,11 @@ Copy the generated public URL (e.g., `https://abc1234.ngrok-free.app`).
 ---
 
 ## Verification & Testing
+
+### Demo Video (PDI Live Proof)
+A complete video demonstration verifying the autonomous end-to-end loop running live against a ServiceNow Personal Developer Instance (PDI):
+- 📺 **Direct Link**: [ServiceNow PDI Live Loop Demo (Google Drive)](https://drive.google.com/file/d/18_ef4ZSV7RTnx4FMUkH-YVfIquSC4-9n/view?usp=sharing)
+- **Highlights Covered**: Real-time webhook triggering from ServiceNow Business Rules, Gemini triage with KB boundary enforcement, and REST Table API write-backs for `respond`, `ask`, and `escalate`.
 
 ### Automated Test Suite
 Run the test suite against the canonical incidents:
