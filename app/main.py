@@ -1,15 +1,8 @@
-import logging
 # pyrefly: ignore [missing-import]
 from fastapi import BackgroundTasks, FastAPI, status
 from app.llm.gemeni import get_agent_decision
 from app.models import IncidentPayload, WebhookResponse
 from app.servicenow import update_incident
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-)
-logger = logging.getLogger("agentic-incident-flow")
 
 _processed_incidents: set[str] = set()
 
@@ -22,7 +15,6 @@ app = FastAPI(
 
 def process_incident(payload: IncidentPayload):
     if payload.incident_sys_id in _processed_incidents:
-        logger.warning("Duplicate incident %s (%s) — skipping", payload.number, payload.incident_sys_id)
         return
 
     try:
@@ -34,7 +26,8 @@ def process_incident(payload: IncidentPayload):
         _processed_incidents.add(payload.incident_sys_id)
     except Exception as exc:
         _processed_incidents.discard(payload.incident_sys_id)
-        logger.error("Failed processing incident %s: %s", payload.number, exc, exc_info=True)
+        print(f"[ERROR] Failed processing incident {payload.number}: {exc}")
+
 
 
 @app.get("/", tags=["Health"])
@@ -69,4 +62,5 @@ async def receive_incident(
     
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True, log_level="error")
+

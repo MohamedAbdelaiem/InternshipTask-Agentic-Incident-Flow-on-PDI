@@ -1,6 +1,4 @@
-import logging
 from typing import Any
-# pyrefly: ignore [missing-import]
 import httpx
 
 from app.config.constants import (
@@ -12,8 +10,6 @@ from app.config.constants import (
 )
 from app.config.settings import settings
 from app.models import AgentDecision
-
-logger = logging.getLogger("agentic-incident-flow")
 
 
 def build_update_payload(decision: AgentDecision) -> dict[str, Any]:
@@ -53,5 +49,4 @@ def update_incident(
             auth=(settings.sn_username, settings.sn_password),
         )
         response.raise_for_status()
-        logger.info("Updated ServiceNow incident %s (decision: %s)", incident_sys_id, decision.decision)
         return response.json().get("result", {})
