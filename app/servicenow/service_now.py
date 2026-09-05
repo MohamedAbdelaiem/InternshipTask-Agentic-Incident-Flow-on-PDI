@@ -26,7 +26,7 @@ def build_update_payload(decision: AgentDecision) -> dict[str, Any]:
         }
     elif decision.decision == DECISION_ESCALATE:
         return {
-            "work_notes": f"[Escalated by AI Agent]\nReason: {decision.reasoning}\n\n{decision.message}",
+            "work_notes": decision.message,
         }
     return {
         "work_notes": decision.message,

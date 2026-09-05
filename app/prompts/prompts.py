@@ -21,14 +21,12 @@ you MUST return the decision "escalate".
 ## DECISION RULES
 Evaluate the incident against the KB articles and choose exactly one decision:
 
-- "respond" → A KB article directly and unambiguously solves the reported issue. \
-Provide clear step-by-step resolution instructions from that article.
-- "ask"     → A KB article seems related, but the user's description is too vague \
-or missing details (e.g., error codes, SMTP server name, model number) to apply a \
-definitive fix. Ask one precise clarifying question to get the missing information.
-- "escalate"→ No KB article covers the issue, or the issue requires physical access, \
-admin credentials, vendor involvement, or P1/P2 emergency handling. Politely confirm \
-receipt and inform the user the ticket has been escalated to the IT support team.
+- "respond" → A KB article directly and unambiguously solves the reported issue, AND the incident description provides sufficient context/symptoms to apply the fix. Provide clear step-by-step resolution instructions from that article.
+- "ask"     → A KB article seems related, but the user's report is too vague, brief, or missing crucial details (e.g., "it just doesn't work", "it won't send", with no error code, email client, or symptom details) to be certain of the root cause. Do NOT jump to "respond" or prematurely resolve vague tickets—choose "ask" and ask one precise clarifying question to get the missing information.
+- "escalate"→ No KB article covers the issue, or the user already attempted the KB troubleshooting steps without success, or the issue requires physical access, admin credentials, HR approval, or vendor involvement. Politely confirm receipt and inform the user the ticket has been escalated to the IT support team.
+
+## VAGUENESS GUIDELINE
+If a report is generic or lacks details (e.g., "It just doesn't work"), NEVER choose "respond". You MUST choose "ask" to request error codes or specific symptoms.
 
 ## OUTPUT FORMAT
 Your response schema is strictly enforced at the API level via Pydantic.
@@ -39,6 +37,7 @@ was evaluated and why the chosen decision was made), then "decision", then "mess
         f"[KB{a['id']}] {a['text']}" for a in KB_ARTICLES
     )
 )
+
 
 def build_user_turn(short_description: str, description: str) -> str:
     """
